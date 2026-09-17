@@ -34,16 +34,21 @@ TeamCode/src/main/java/org/firstinspires/ftc/teamcode/
 ├── input/
 │   ├── InputModification.java Stateless shaping: deadzone, expo, clamp, scale, SlewLimiter
 │   └── InputHandler.java      Raw gamepad -> shaped DrivePowers + latched actions
+├── vision/
+│   └── LimelightCamera.java   Limelight 3A wrapper. Pure data, never touches the follower.
 ├── opmode/
-│   └── Teleop.java            LinearOpMode driving Follower.manual()
+│   ├── Teleop.java            LinearOpMode driving Follower.manual()
+│   └── LimelightTest.java     Camera-only check, no drivetrain required
 └── pedro/
     ├── Constants.java         Wires ConfigInfo into the Pedro follower. No literals.
     ├── Tuning.java            Tuner registration
     └── procedures/            Pedro autotune procedures
 ```
 
-Dependency direction is strictly one way: `opmode` -> `input` -> `config`, and `pedro` -> `config`.
-Nothing in `config` or `input` may import an OpMode.
+Dependency direction is strictly one way: `opmode` -> `input`/`vision` -> `config`, and
+`pedro` -> `config`. Nothing in `config`, `input` or `vision` may import an OpMode, and `vision` must
+not import the follower — an OpMode decides what to do with a pose estimate, the camera only reports
+one.
 
 ## Rules
 
@@ -91,3 +96,9 @@ updated in the same commit.
    verified, and what is still a placeholder. Newest entry at the top.
 2. **Update the Architecture tree above** whenever a package or top-level file is added, removed, or
    repurposed, so it never drifts from the filesystem.
+3. **Update the placeholder status table** in the latest `docs/PROGRESS.md` entry whenever a tuner is
+   run or a measurement is filled in, so it is always clear what is still unmeasured.
+
+If you add a new kind of artefact that future agents will need to keep in step — another doc, a
+generated file, a config that must mirror the hardware — add it to this list rather than assuming
+the next agent will notice.

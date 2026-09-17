@@ -85,6 +85,30 @@ public final class ConfigInfo {
         private Foresight() {}
     }
 
+    /**
+     * The camera's pose on the robot is configured in the Limelight web UI ("Camera Pose in Robot
+     * Space"), not here, so no mounting offsets belong in this block.
+     */
+    public static final class Vision {
+        public static final String LIMELIGHT = "limelight";
+
+        public static final int DEFAULT_PIPELINE = 0;
+        public static final int POLL_RATE_HZ = 100;
+
+        /** Results older than this are treated as no target. */
+        public static final long MAX_STALENESS_MS = 200;
+
+        /**
+         * Limelight reports field coordinates from the field centre in metres; Pedro works in
+         * inches from a corner. Half of a 144 in field. Verify against your uploaded field map and
+         * whichever origin the season's paths use before trusting {@code fieldPose()}.
+         */
+        public static final double FIELD_ORIGIN_OFFSET_X = 72.0;
+        public static final double FIELD_ORIGIN_OFFSET_Y = 72.0;
+
+        private Vision() {}
+    }
+
     public static final class Field {
         public static final Pose ORIGIN = new Pose(0, 0, 0);
 

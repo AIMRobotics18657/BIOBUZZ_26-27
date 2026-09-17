@@ -5,6 +5,43 @@ a placeholder. See `CLAUDE.md` for the rules this log is part of.
 
 ---
 
+## 2026-09-17 — Limelight 3A support
+
+**Changed**
+- Added `vision/LimelightCamera.java`, a wrapper over the SDK `Limelight3A`.
+- Added `opmode/LimelightTest.java`, a camera-only check that does not need the drivetrain.
+- Added `ConfigInfo.Vision` (device name, pipeline, poll rate, staleness limit, field origin offset).
+
+**Why**
+Vision needs a seam that is testable without a working chassis. The wrapper is pure data — it reads
+the camera and reports results, and never touches the follower — so an OpMode decides what to do
+with a pose estimate rather than the camera silently moving the robot.
+
+**Verified**
+- `:TeamCode:compileDebugJavaWithJavac` succeeds, which is what confirms the signatures below.
+- API checked against `Hardware-11.2.1.aar` and the SDK's `SensorLimelight3A` sample, not memory:
+  `updateRobotOrientation(double)` takes degrees, `getBotpose_MT2()`, `getBotposeTagCount()`,
+  `getStaleness()`, `setPollRateHz(int)`, and `Position.x/.y` after `toUnit(DistanceUnit.INCH)`.
+- The SDK sample calls `result.isValid()` without a null check; `getLatestResult()` returns null
+  before `start()` and when no data has arrived. The wrapper null-checks and also rejects results
+  older than `MAX_STALENESS_MS`.
+
+**Not done on purpose**
+- The Limelight is **not** wired into `Teleop`. Doing so would make teleop fail to initialize
+  whenever the camera is unplugged or renamed. To use it there: construct `LimelightCamera`, call
+  `start()` after `waitForStart()`, and call `camera.update(follower.pose().heading())` in the loop.
+- No automatic relocalization. `fieldPose()` returns an estimate; nothing feeds it to
+  `follower.setPose()` until the field map and origin convention are confirmed on a real field.
+- No camera mounting offsets in code — "Camera Pose in Robot Space" is configured in the Limelight
+  web UI, so constants here would be dead code.
+
+**Needs checking on a field**
+`FIELD_ORIGIN_OFFSET_X/Y` are 72.0, half of a 144 in field, to shift Limelight's field-centre origin
+to a corner. Whether the axes and origin line up with the season's paths depends on the uploaded
+field map and cannot be confirmed off the field. Verify before trusting `fieldPose()`.
+
+---
+
 ## 2026-09-17 — Teleop and input stack scaffolded
 
 **Changed**
