@@ -63,10 +63,15 @@ curl -sSLO https://repo1.maven.org/maven2/com/pedropathing/core/3.0.0/core-3.0.0
 directions, offsets and tuner output live there and nowhere else. `Constants.java` contains no
 numeric or string literals — it only wires `ConfigInfo` into Pedro configs.
 
-**Placeholder discipline.** Values that are only knowable once the robot is built and tuned are set
-to `ConfigInfo.PLACEHOLDER`, never to an invented but plausible number. A guess that looks like a
-measurement is worse than an obvious stand-in. When the type forces a real value (enums such as
-motor direction or pod type), pick the uniform/neutral option and say so in the progress log.
+**Placeholder discipline cuts both ways.** `ConfigInfo.PLACEHOLDER` marks a *measurement that
+cannot exist until the robot is physically built* — pod offsets, achievable velocities, braking
+behaviour. Anything with a sensible convention gets a real value instead: config names, the standard
+mecanum motor directions, pod type, driver preferences. Do not scatter placeholders over things that
+can simply be set.
+
+Equally, never invent a plausible-looking number in place of a real measurement. Pedro marks all 17
+Foresight parameters `ConfigVar.required()` with no fallback and publishes no starting values, so
+there is nothing legitimate to put there until ForesightTuner runs.
 
 Note that `Foresight`'s constructor eagerly calls `naturalForwardDeceleration.get()`, so these
 `ConfigVar`s cannot simply be left unset — doing so throws at `Constants.create()` and breaks

@@ -29,22 +29,25 @@ literals.
 - Gamepad edge-detection methods (`optionsWasPressed`, `shareWasPressed`) confirmed present in
   `RobotCore-11.2.1.aar` rather than assumed.
 
-**Still placeholder**
-| Where | What | Source |
+**Placeholder scope**
+`PLACEHOLDER` is reserved for measurements that cannot exist until the robot is physically built.
+Anything with a sensible convention is set for real.
+
+| Where | What | Status |
 |---|---|---|
-| `ConfigInfo.Drive` | 4 config name strings | RC configuration |
-| `ConfigInfo.Drive` | 4 motor directions, all `FORWARD` | MecanumTuner |
-| `ConfigInfo.Localization` | pod offsets `0.0`, pod directions, pod type | PinpointTuner |
-| `ConfigInfo.Foresight` | all 17 values, set to `PLACEHOLDER` | ForesightTuner |
+| `Drive` | 4 config name strings | set — team convention |
+| `Drive` | motor directions, left side `REVERSE` | set — standard mecanum layout; MecanumTuner confirms |
+| `Localization` | pod type `goBILDA_4_BAR_POD`, pod directions `FORWARD` | set — conventional; PinpointTuner confirms |
+| `Localization` | `X_POD_OFFSET`, `Y_POD_OFFSET` | **PLACEHOLDER** — measured off the built robot |
+| `Foresight` | all 17 values | **PLACEHOLDER** — ForesightTuner |
 
-Motor directions, pod directions and pod type are enums, so they carry a real value rather than a
-sentinel. All-`FORWARD` is a legal configuration and will not announce itself as wrong — run the
-tuners before trusting it. Pod offsets sit at `0.0` rather than `PLACEHOLDER` because a `1.0` offset
-would be a silently plausible wrong measurement.
+Pedro marks every Foresight parameter `ConfigVar.required()` with no fallback, and publishes no
+starting values — AutoTune generates all of them. So there is nothing reasonable to set there until
+the robot drives, and inventing numbers would only disguise an untuned robot as a tuned one.
 
-`GamepadSettings` defaults are deliberately neutral — expo `0.0`, `SLEW_RATE` infinity, turn scale
-`1.0` — so the shaping code is wired but inert until a driver dials it in.
+`GamepadSettings` defaults are neutral — expo `0.0`, `SLEW_RATE` infinity, turn scale `1.0` — so the
+shaping code is wired but inert until a driver dials it in. These are preferences, not measurements.
 
 **Next**
-- Run MecanumTuner, PinpointTuner, ForesightTuner; replace the table above.
+- Run MecanumTuner, PinpointTuner, ForesightTuner; replace the placeholders above.
 - Register tuners in `pedro/Tuning.java` (left untouched).

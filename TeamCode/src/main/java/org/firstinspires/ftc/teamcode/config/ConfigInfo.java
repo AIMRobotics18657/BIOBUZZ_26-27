@@ -1,54 +1,64 @@
 package org.firstinspires.ftc.teamcode.config;
 
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
+
 import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 /**
- * Everything specific to this robot: Robot Controller config names, mounting geometry, and
- * tuner output. Any field set to {@link #PLACEHOLDER} is a stand-in, not a measurement.
+ * Everything specific to this robot: Robot Controller config names, mounting geometry, and tuner
+ * output.
+ *
+ * Most fields hold a real, conventional value that a tuner may later correct. Only measurements
+ * that cannot exist until the robot is physically built use {@link #PLACEHOLDER}.
  */
 public final class ConfigInfo {
     private ConfigInfo() {}
 
-    /** Stand-in for a value that is only knowable once the robot is built and tuned. */
+    /** A measurement that can only be taken off the built robot. Never a guess dressed as a value. */
     public static final double PLACEHOLDER = 1.0;
 
-    /** Names must match the Robot Controller configuration. Directions come from MecanumTuner. */
+    /** Names follow team convention. Directions are the standard mecanum layout; MecanumTuner confirms. */
     public static final class Drive {
         public static final String FRONT_LEFT = "frontLeft";
         public static final String FRONT_RIGHT = "frontRight";
         public static final String BACK_LEFT = "backLeft";
         public static final String BACK_RIGHT = "backRight";
 
-        public static final DcMotorSimple.Direction FRONT_LEFT_DIRECTION = DcMotorSimple.Direction.FORWARD;
-        public static final DcMotorSimple.Direction FRONT_RIGHT_DIRECTION = DcMotorSimple.Direction.FORWARD;
-        public static final DcMotorSimple.Direction BACK_LEFT_DIRECTION = DcMotorSimple.Direction.FORWARD;
-        public static final DcMotorSimple.Direction BACK_RIGHT_DIRECTION = DcMotorSimple.Direction.FORWARD;
+        public static final DcMotorSimple.Direction FRONT_LEFT_DIRECTION = REVERSE;
+        public static final DcMotorSimple.Direction BACK_LEFT_DIRECTION = REVERSE;
+        public static final DcMotorSimple.Direction FRONT_RIGHT_DIRECTION = FORWARD;
+        public static final DcMotorSimple.Direction BACK_RIGHT_DIRECTION = FORWARD;
 
         private Drive() {}
     }
 
-    /** Pod type, offsets, and pod directions all come from PinpointTuner. */
     public static final class Localization {
         public static final String PINPOINT = "pinpoint";
 
         public static final GoBildaPinpointDriver.GoBildaOdometryPods POD_TYPE =
                 GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
 
-        /** Inches from the tracking center: +X forward, +Y left. */
-        public static final double X_POD_OFFSET = 0.0;
-        public static final double Y_POD_OFFSET = 0.0;
-
+        /** PinpointTuner flips these if a pod counts backwards. */
         public static final GoBildaPinpointDriver.EncoderDirection X_POD_DIRECTION =
                 GoBildaPinpointDriver.EncoderDirection.FORWARD;
         public static final GoBildaPinpointDriver.EncoderDirection Y_POD_DIRECTION =
                 GoBildaPinpointDriver.EncoderDirection.FORWARD;
 
+        /** Measured: inches from the tracking center to each pod. +X forward, +Y left. */
+        public static final double X_POD_OFFSET = PLACEHOLDER;
+        public static final double Y_POD_OFFSET = PLACEHOLDER;
+
         private Localization() {}
     }
 
-    /** Every value here comes from ForesightTuner. Path following is not usable until they are real. */
+    /**
+     * Measured by ForesightTuner. Pedro ships no defaults for any of these — every one is
+     * {@code ConfigVar.required()} with no fallback — so there is nothing reasonable to set until
+     * the robot drives. Path following is not usable until they are real.
+     */
     public static final class Foresight {
         public static final double FORWARD_TRANSLATIONAL_PRIMARY = PLACEHOLDER;
         public static final double FORWARD_TRANSLATIONAL_SECONDARY = PLACEHOLDER;
