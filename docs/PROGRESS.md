@@ -1,23 +1,60 @@
 # Progress Log
 
 Newest first. One entry per substantive change: what changed, why, what was verified, what is still
-a placeholder. See `CLAUDE.md` for the rules this log is part of.
+a placeholder. See `AGENTS.md` for the rules this log is part of.
+
+---
+
+## 2026-09-19 — Iterative Teleop and shared agent instructions
+
+**Changed**
+
+- Converted `Teleop` from `LinearOpMode` to `OpMode`, using `init()`, `start()`, and `loop()`.
+- Refresh localization at Start; call `follower.stop()` and `follower.update()` in `stop()`.
+- Moved the full repository guidance into root `AGENTS.md` and made `CLAUDE.md` import it;
+  updated the architecture description to match iterative Teleop.
+
+**Why**
+
+Use the iterative lifecycle for driver controls and make the existing repository rules discoverable
+by Codex without maintaining duplicate instructions.
+
+**Verified**
+
+- `:TeamCode:compileDebugJavaWithJavac` succeeds with Pedro 3.0.0.
+- Inspected the installed Pedro 3.0.0 bytecode for manual drive, field-centric conversion,
+  localization, and stopping. `stop()` selects IDLE; the next `update()` stops the drivetrain.
+- Checked Pedro's official TeleOp guide and OpenAI's official `AGENTS.md` discovery documentation.
+- Robot testing remains pending; controls and input shaping are unchanged.
+
+**Placeholder status**
+
+| Where | What | Status |
+|---|---|---|
+| `Drive` | Config names and motor directions | Unchanged conventions; verify on robot |
+| `Localization` | Pod type and directions | Unchanged conventions; verify with PinpointTuner |
+| `Localization` | `X_POD_OFFSET`, `Y_POD_OFFSET` | **PLACEHOLDER** — measure on built robot |
+| `Foresight` | All 17 values | **PLACEHOLDER** — run ForesightTuner |
+| `Vision` | Field origin offsets | Set to 72 inches; field-map alignment unverified |
 
 ---
 
 ## 2026-09-17 — Limelight 3A support
 
 **Changed**
+
 - Added `vision/LimelightCamera.java`, a wrapper over the SDK `Limelight3A`.
 - Added `opmode/LimelightTest.java`, a camera-only check that does not need the drivetrain.
 - Added `ConfigInfo.Vision` (device name, pipeline, poll rate, staleness limit, field origin offset).
 
 **Why**
+
 Vision needs a seam that is testable without a working chassis. The wrapper is pure data — it reads
 the camera and reports results, and never touches the follower — so an OpMode decides what to do
 with a pose estimate rather than the camera silently moving the robot.
 
 **Verified**
+
 - `:TeamCode:compileDebugJavaWithJavac` succeeds, which is what confirms the signatures below.
 - API checked against `Hardware-11.2.1.aar` and the SDK's `SensorLimelight3A` sample, not memory:
   `updateRobotOrientation(double)` takes degrees, `getBotpose_MT2()`, `getBotposeTagCount()`,
@@ -27,6 +64,7 @@ with a pose estimate rather than the camera silently moving the robot.
   older than `MAX_STALENESS_MS`.
 
 **Not done on purpose**
+
 - The Limelight is **not** wired into `Teleop`. Doing so would make teleop fail to initialize
   whenever the camera is unplugged or renamed. To use it there: construct `LimelightCamera`, call
   `start()` after `waitForStart()`, and call `camera.update(follower.pose().heading())` in the loop.
@@ -36,6 +74,7 @@ with a pose estimate rather than the camera silently moving the robot.
   web UI, so constants here would be dead code.
 
 **Needs checking on a field**
+
 `FIELD_ORIGIN_OFFSET_X/Y` are 72.0, half of a 144 in field, to shift Limelight's field-centre origin
 to a corner. Whether the axes and origin line up with the season's paths depends on the uploaded
 field map and cannot be confirmed off the field. Verify before trusting `fieldPose()`.
@@ -45,17 +84,20 @@ field map and cannot be confirmed off the field. Verify before trusting `fieldPo
 ## 2026-09-17 — Teleop and input stack scaffolded
 
 **Changed**
+
 - Added `config/ConfigInfo.java`, `config/GamepadSettings.java`, `input/InputModification.java`,
   `input/InputHandler.java`, `opmode/Teleop.java`.
 - Filled in `pedro/Constants.java`, which previously returned `null`.
 - Added `CLAUDE.md` and this log.
 
 **Why**
+
 Starter repo needed a working teleop and a place for robot-dependent values that is not scattered
 through the OpModes. `ConfigInfo` is now the single source of truth; `Constants.java` holds no
 literals.
 
 **Verified**
+
 - `:TeamCode:compileDebugJavaWithJavac` succeeds.
 - API surface checked against `core-3.0.0-sources.jar` (Maven Central) and the `revhub`/`tuning`
   sources jars in the Gradle cache, not from memory. Two corrections came out of that:
@@ -67,6 +109,7 @@ literals.
   `RobotCore-11.2.1.aar` rather than assumed.
 
 **Placeholder scope**
+
 `PLACEHOLDER` is reserved for measurements that cannot exist until the robot is physically built.
 Anything with a sensible convention is set for real.
 
@@ -86,5 +129,6 @@ the robot drives, and inventing numbers would only disguise an untuned robot as 
 shaping code is wired but inert until a driver dials it in. These are preferences, not measurements.
 
 **Next**
+
 - Run MecanumTuner, PinpointTuner, ForesightTuner; replace the placeholders above.
 - Register tuners in `pedro/Tuning.java` (left untouched).
