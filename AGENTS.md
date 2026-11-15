@@ -4,9 +4,9 @@ FTC robot code built on **Pedro Pathing 3.0**. Read this before changing anythin
 
 | Component | Version |
 |---|---|
-| FTC SDK | 11.2.1 |
-| `com.pedropathing:core` / `:revhub` | 3.0.0 |
-| `com.pedropathing:tuning` | 1.0.0 |
+| FTC SDK | 12.0.0 |
+| `com.pedropathing:core` / `:revhub` | 3.0.1 |
+| `com.pedropathing:tuning` | 1.0.1 |
 | AGP / Gradle | 8.13.2 / 9.1.0 |
 
 ## Build and verify
@@ -28,21 +28,35 @@ run OpModes off-robot, so compilation is the only automated signal available.
 
 ```
 TeamCode/src/main/java/org/firstinspires/ftc/teamcode/
-├── config/
-│   ├── ConfigInfo.java        Robot-dependent values: RC config names, geometry, tuner output
-│   └── GamepadSettings.java   Driver preferences and control bindings
-├── input/
-│   ├── InputModification.java Stateless shaping: deadzone, expo, clamp, scale, SlewLimiter
-│   └── InputHandler.java      Raw gamepad -> shaped DrivePowers + latched actions
-├── vision/
-│   └── LimelightCamera.java   Limelight 3A wrapper. Pure data, never touches the follower.
-├── opmode/
-│   ├── Teleop.java            Iterative OpMode driving Follower.manual()
-│   └── LimelightTest.java     Camera-only check, no drivetrain required
-└── pedro/
-    ├── Constants.java         Wires ConfigInfo into the Pedro follower. No literals.
-    ├── Tuning.java            Tuner registration
-    └── procedures/            Pedro autotune procedures
+├── Drivebase.java
+├── MiniBots/MiniTank.java
+├── MiniBots/Minibots.java
+├── Robot.java
+├── ScoringAssembly.java
+├── Settings/GamepadSettings.java
+├── Settings/InputHandler.java
+├── Settings/InputModification.java
+├── ShooterTesting.java
+├── TeleOpConstants.java
+├── config/ConfigInfo.java
+├── driftTest.java
+├── opmode/LimelightTest.java
+├── opmode/Teleop.java
+├── pedro/Constants.java
+├── pedro/Tuning.java
+├── pedro/procedures/ForesightTuner.java
+├── pedro/procedures/MecanumTuner.java
+├── pedro/procedures/OTOSTuner.java
+├── pedro/procedures/OctoQuadTuner.java
+├── pedro/procedures/PinpointTuner.java
+├── pedro/procedures/Tests.java
+├── pedro/procedures/ThreeWheelIMUTuner.java
+├── pedro/procedures/ThreeWheelTuner.java
+├── pedro/procedures/TwoWheelTuner.java
+├── pedroDrift.java   Basic 48-inch strafe autonomous
+├── ratioShooting.java
+├── vision/Limelight.java
+├── vision/LimelightCamera.java
 ```
 
 Dependency direction is strictly one way: `opmode` -> `input`/`vision` -> `config`, and

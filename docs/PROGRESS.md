@@ -5,6 +5,42 @@ a placeholder. See `AGENTS.md` for the rules this log is part of.
 
 ---
 
+## 2026-11-12 — Basic Pedro Drift autonomous
+
+- Registered `pedroDrift` as an iterative autonomous OpMode. It follows the existing
+  (0, 0, 0°) -> (0, 48, 0°) path once (a left strafe), displays pose and endpoint
+  distance, and stops at completion or Stop. Removed undefined park/scheduler code.
+- Restored the commented follower factory using the existing hardware interface names,
+  all four motor directions, Pinpoint localization, and Foresight configuration.
+- Restored missing measurement fields in ConfigInfo with NaN placeholders and an explicit
+  preflight error before hardware construction. No tuner measurements were invented.
+- API signatures verified against cached Pedro core/revhub 3.0.1 source jars.
+- Verification: `:TeamCode:compileDebugJavaWithJavac` succeeded with local JBR 17.
+  Robot path execution remains unverified and blocked by
+  missing measurements. Updated architecture inventory and dependency versions in AGENTS.md.
+
+| Where | What | Status |
+|---|---|---|
+| Drive | Existing flDrive/frDrive/blDrive/brDrive names; standard motor directions | Verify on robot |
+| Localization | Pinpoint name, 4-bar pods and forward encoder directions | Verify on robot |
+| Localization | X/Y pod offsets | **PLACEHOLDER** — run PinpointTuner |
+| Foresight | All 17 measurements | **PLACEHOLDER** — run ForesightTuner |
+
+---
+
+
+## 2026-11-08 — Shooter velocity error telemetry
+
+- Added target-minus-measured velocity error for both shooter motors in rad/s, so tuning
+  shows underspeed and overspeed directly. Each measured velocity is read once per loop
+  and shared by the measured-speed and error displays.
+- Verified the error calculation and units by inspection; compile result is reported with delivery.
+  On-robot validation remains pending. Recovery timing was discussed only, not implemented.
+- Placeholder status: no robot measurements or configuration values changed; existing
+  localization offsets and Foresight measurements remain unmeasured as listed below.
+
+---
+
 ## 2026-09-19 — Iterative Teleop and shared agent instructions
 
 **Changed**

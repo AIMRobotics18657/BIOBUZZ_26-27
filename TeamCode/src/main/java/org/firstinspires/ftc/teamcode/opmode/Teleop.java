@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
+import com.aimrobotics.aimlib.gamepad.AIMPad;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.ManualDrive;
@@ -7,8 +8,12 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.config.ConfigInfo;
-import org.firstinspires.ftc.teamcode.input.InputHandler;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Drivebase;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.TeleOpConstants;
+import org.firstinspires.ftc.teamcode.Settings.ConfigInfo;
+import org.firstinspires.ftc.teamcode.Settings.InputHandler;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 @TeleOp(name = "Teleop", group = "Competition")
@@ -16,56 +21,34 @@ public class Teleop extends OpMode {
     private Follower follower;
     private InputHandler input;
 
+    private AIMPad aimPad1;
+    private AIMPad aimPad2;
+
+    private Robot robot;
+
+    private boolean isAuto = false;
+    private boolean isRed;
+
     @Override
     public void init() {
-        follower = Constants.create(hardwareMap);
-        follower.setPose(ConfigInfo.Field.ORIGIN);
-        input = new InputHandler(gamepad1, gamepad2);
 
-        telemetry.addLine("Initialized. Press start.");
-        telemetry.update();
+        aimPad1 = new AIMPad(gamepad1);
+        aimPad2 = new AIMPad(gamepad2);
+
+        robot = new Robot(TeleOpConstants.ORIGIN, isAuto, isRed);
+
+        robot.init(hardwareMap);
     }
-
-    @Override
-    public void start() {
-        // Refresh localization before the first field-centric command.
-        follower.update();
-        input.reset();
-    }
-
     @Override
     public void loop() {
-        input.update();
+        aimPad1.update(gamepad1);
+        aimPad2.update(gamepad2);
 
-        if (input.headingResetRequested()) follower.setHeading(0);
+        robot.loop(aimPad1, aimPad2);
+        robot.telemetry(telemetry);
 
-        DrivePowers powers = input.drivePowers();
-        if (input.fieldCentric()) {
-            powers = ManualDrive.fieldCentric(powers, follower.pose().heading());
-        }
-
-        follower.manual(powers);
-        follower.update();
-
-        addTelemetry();
-    }
-
-    @Override
-    public void stop() {
-        if (follower != null) {
-            follower.stop();
-            // Pedro 3 applies the idle drivetrain stop during update().
-            follower.update();
-        }
-    }
-
-    private void addTelemetry() {
-        Pose pose = follower.pose();
-        telemetry.addData("mode", input.fieldCentric() ? "field centric" : "robot centric");
-        telemetry.addData("x", "%.2f", pose.x());
-        telemetry.addData("y", "%.2f", pose.y());
-        telemetry.addData("heading", "%.2f deg", Math.toDegrees(pose.heading()));
-        telemetry.addData("loop", "%.1f hz", input.deltaSeconds() > 0 ? 1.0 / input.deltaSeconds() : 0.0);
         telemetry.update();
     }
+
+
 }

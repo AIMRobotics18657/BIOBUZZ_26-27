@@ -11,7 +11,7 @@
 //import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 //import org.firstinspires.ftc.robotcore.external.navigation.Position;
-//import org.firstinspires.ftc.teamcode.config.ConfigInfo;
+//import org.firstinspires.ftc.teamcode.Settings.ConfigInfo;
 //
 //import java.util.Collections;
 //import java.util.List;
